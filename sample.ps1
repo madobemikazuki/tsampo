@@ -39,14 +39,7 @@ $Copies = 1
 $book.PrintOut.Invoke(@($From, $To, $Copies))
 
 
-# 書き込み先ファイルネームの定義
-# $head_name = "c教育_"
-# $extension = ".xlsx"
-#$output_path = @($head_name, $applicant_num, $applicant_name, $extension) 
-#$output_path は配列オブジェクトなので ダブルクオートで囲むとStringに変換できる。
-# ローカルに保存したいが今まだやめておく。
-# $output_folder = "${HOME}\apps\ft\data\output\"
-# $book.SaveAs("$output_path")
+
 $book.Close()
 
 $excel.Quit()
