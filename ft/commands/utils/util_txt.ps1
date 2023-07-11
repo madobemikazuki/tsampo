@@ -1,9 +1,11 @@
-﻿#Set-StrictMode -Version Latest
-Set-StrictMode -Version Latest
+﻿Set-StrictMode -Version Latest
+
 
 function find_file_name {
   Param(
+    [Parameter(Mandatory = $true)]
     [String]$dic,
+    [Parameter(Mandatory = $true)]
     [String]$target
   )
   # ファイルが存在しないときのエラー処理がわからない。
@@ -16,7 +18,7 @@ function find_file_name {
   }
 }
 
-function read_to_array{
+function read_to_array {
   Param(
     [Parameter(Mandatory = $true)][String]$txt_path,
     [String]$encode = "Default"
