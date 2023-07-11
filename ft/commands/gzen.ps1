@@ -1,12 +1,12 @@
 ﻿Set-StrictMode -Version Latest
 
-# 必要な情報は設定ファイルとして読み込む init()が必要
+
 
 $gzen_header = ".\data\header\gZEN_header_ANSI.txt"
 $selected_list = ".\data\header\gZen_select_items_ANSI.txt"
 
 $export_folder = "$HOME\Downloads"
-$target_name = "*事前申*.txt"
+$target_name = "*事前申請*.txt"
 $export_file_path = "$export_folder\export.csv" 
 
 $comma = ','
