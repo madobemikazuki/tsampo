@@ -1,14 +1,21 @@
 ﻿Set-StrictMode -Version Latest
 
 # 必要な情報は設定ファイルとして読み込む init()が必要
-Set-Variable -Name DLMT_comma -Value "," -Option Constant
-Set-Variable -Name TARGET_NAME -Value "*事前申請書*.txt" -Option Constant
-Set-Variable -Name GZEN_HEADER -Value ".\data\header\gZEN_header_ANSI.txt" -Option Constant
-Set-Variable -Name SELECTED_LIST -Value ".\data\header\gZen_select_items_ANSI.txt" -Option Constant
-Set-Variable -Name OUTPUT_DIC -Value "$HOME\downloads" -Option Constant
-Set-Variable -Name OUTPUT_FILE_NAME -Value "\export.csv" -Option Constant
-Set-Variable -Name WEB_APP_PATH -Value "$HOME\apps\cpy\cpy.html" -Option Constant
-Set-Variable -Name C_NAME -Value "gZEN" -Option Constant
+
+$gzen_header = ".\data\header\gZEN_header_ANSI.txt"
+$selected_list = ".\data\header\gZen_select_items_ANSI.txt"
+
+$export_folder = "$HOME\Downloads"
+$target_name = "*事前申*.txt"
+$export_file_path = "$export_folder\export.csv" 
+
+$comma = ','
+$tab = "`t"
+
+#ftの親パスを取得
+$app_path = Get-Location | Split-Path
+$cpy_path = "$app_path\cpy\cpy.html"
+$command_name = "gZEN"
 
 function notifycation {
   Param(
@@ -47,40 +54,42 @@ function shape_values {
   return $selected_obj
 }
 
+
+
 try {
   . .\commands\utils\util_txt.ps1
-  $header = read_to_array $GZEN_HEADER
-  # *事前申請書*.txt はSHIFT-JISでエンコードされている。
-  $values_filename = find_file_name $OUTPUT_DIC $TARGET_NAME
-  $values = read_to_array "$OUTPUT_DIC\$values_filename"
+  $header = read_to_array $gzen_header
+  # *事前申請*.txt はSHIFT-JISでエンコードされている。
+  $values_filename = find_file_name $export_folder $target_name
+  $values = read_to_array "$export_folder\$values_filename"
 
   #テキストファイルを読み込み、ヘッダーをつけてCSVファイルを生成。
   . .\commands\utils\util_csv.ps1
   $csv_obj = bind_as_csv $header $values
 
   # 必要な項目の情報を抽出する
-  $list = read_to_array $SELECTED_LIST
+  $list = read_to_array $selected_list
   $selected_csv_obj = $csv_obj | Select-Object -Property $list
 
   $output_list = read_to_array ".\data\header\gZen_output_items_ANSI.txt"
   $new_csv_obj = shape_values $selected_csv_obj $output_list
   #CSVファイルを出力
-  export_csv $new_csv_obj "$OUTPUT_DIC/$OUTPUT_FILE_NAME" $DLMT_comma
+  export_csv $new_csv_obj $export_file_path $comma
 
   #clipboardに出力する
-  $plain_text = (Get-Content -Path "$OUTPUT_DIC/$OUTPUT_FILE_NAME" -Encoding UTF8)
+  $plain_text = Get-Content -Path $export_file_path -Encoding UTF8
   $formatted_text = $plain_text.Replace('"', '')
-  $formatted_text.Replace($DLMT_comma, "`t") | Set-Clipboard
+  $formatted_text.Replace($comma, $tab) | Set-Clipboard
 
   # $values＿file_name の削除
   #Remove-Item -Path $values_filename
 
   # EDGEブラウザ起動し、cpyを起動する。
-  Start-Process msedge $WEB_APP_PATH
+  Start-Process msedge $cpy_path
 
 
   # 通知を表示
-  notifycation $C_NAME "🐈.,💩💩,,.  💩,  🌲🏡"
+  notifycation $command_name "🐈.,💩💩,,.  💩,  🌲🏡"
 }
 catch {
   Write-Host "エラー発生 :: $($_.Exception.Message)"
